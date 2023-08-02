@@ -1,4 +1,6 @@
 const ContactInfo = require("./ContactInfo")
+const NotFound = require("./error/NotFound")
+const Validation = require("./error/Validation")
 
 class Contact {
     static ID = 0
@@ -9,52 +11,74 @@ class Contact {
     }
 
     newContactInfo(typeOfContact, valueOfContact) {
-        if (typeof ContactInfo.typeContact != "string") { return "Invalid Input Type in ContactInfo" }
         let contactInfoObj = new ContactInfo(typeOfContact, valueOfContact)
-        Contact.contactInfo.push(contactInfoObj)
+        this.contactInfo.push(contactInfoObj)
+        // console.log(this.contactInfo)
         return contactInfoObj
     }
 
     findContactInfo(contactInfoID) {
-        for (let index = 0; index < this.contactInfo.length; index++) {
-            if (contactInfoID == this.contactInfo[index].ID) {
-                return [index, true]
-            } return [-1, false]
+        try {
+            for (let index = 0; index < this.contactInfo.length; index++) {
+                if (contactInfoID === this.contactInfo[index].ID) {
+                    return index
+                }
 
+            } throw new NotFound("contactInfoID not found")
+        } catch (error) {
+            return error
         }
     }
-    getAllContactInfo(){
-        return this.contactInfo
+
+    getContactInfoByID(contactInfoID) {
+        try {
+            if (typeof contactInfoID != "number") {
+                throw new Validation("contactInfoID input is invalid")
+            }
+            let indexOfContactInfo = this.findContactInfo(contactInfoID)
+            return this.contactInfo[indexOfContactInfo]
+        } catch (error) {
+            throw error
+        }
     }
 
-    updateContactInfo(contactInfoID, parameter, newValue) {
-        if (typeof contactInfoID != "number") { return "Invalid UserID input" }
-        let [indexOfContactInfo, isContactInfoExist] = this.findContactInfo(contactInfoID)
-        if (!isContactInfoExist) { return "Contact Info not found" }
-        switch (parameter) {
-            case "typeOfContact":
-                if (typeof newValue !== "string") { return "Please input valid input for new full name" }
-                Contact.contactInfo[indexOfContactInfo].typeOfContact = newValue
-                return Contact.contactInfo[indexOfContactInfo]
 
-            case "valueOfContact":
-                if (typeof newValue !== "string") { return "Please input valid input for new full name" }
-                Contact.contactInfo[indexOfContactInfo].valueOfContact = newValue
-                return Contact.contactInfo[indexOfContactInfo]
-            default: return "invalid parameter"
-        }   
-    }
-
-    deleteContactInfo(contactInfoID){
-        if (typeof contactInfoID != "number") {return "Invalid contactInfoID input"}
-        let [indexOfContactInfo, isContactInfoExist] = Contact.findContactInfo(contactInfoID)
-        if (isContactInfoExist) {return "Contact Info not found"}
-        Contact.contactInfo.splice(indexOfContactInfo,1)
-    }
-
+getAllContactInfo(){
+    return this.contactInfo
 }
 
-// Contact.newContactInfo("Mobile", 8462738495)
+updateContactInfo(contactInfoID, parameter, newValue) {
+    try {
+        if (typeof contactInfoID != "number") { throw new Validation("ContactInfoID input is invalid") }
+        let indexOfContactInfo = this.findContactInfo(contactInfoID)
+        switch (parameter) {
+            case "typeOfContact":
+                if (typeof newValue !== "string") { throw new Validation("typeOfContact input is invalid") }
+                this.contactInfo[indexOfContactInfo].typeOfContact = newValue
+                return this.contactInfo[indexOfContactInfo]
+
+            case "valueOfContact":
+                if (typeof newValue !== "string") { throw new Validation("valueOfContact input is invalid") }
+                this.contactInfo[indexOfContactInfo].valueOfContact = newValue
+                return this.contactInfo[indexOfContactInfo]
+            default: throw new Validation("Parameter in Invalid")
+        }
+    } catch (error) {
+        return error
+    }
+}
+
+deleteContactInfo(contactInfoID){
+    try {
+        if (typeof contactInfoID != "number") { throw new Validation("contactInfoID input is invalid") }
+        let indexOfContactInfo = this.findContactInfo(contactInfoID)
+        this.contactInfo.splice(indexOfContactInfo, 1)
+    } catch (error) {
+        return error
+    }
+}
+
+}
 
 
 module.exports = Contact

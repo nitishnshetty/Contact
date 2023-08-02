@@ -6,13 +6,13 @@ class ContactInfo{
         this.valueOfContact = valueOfContact
     }
 
-    typeContact(){
-        return this.typeOfContact
-    }
+    // typeContact(){
+    //     return this.typeOfContact
+    // }
 
-    valueContact(){
-        return this.valueOfContact
+    // valueContact(){
+    //     return this.valueOfContact
     }
-}
+// }
 
 module.exports = ContactInfo
